@@ -12,9 +12,10 @@ import io.vertx.ext.web.handler.BodyHandler;
 
 public class MainVerticle extends AbstractVerticle {
 
-  private JDBCClient dbClient;
-
   private static final Logger LOGGER = LoggerFactory.getLogger(MainVerticle.class);
+
+  private JDBCClient dbClient;
+  private IndexPageHandler indexPageHandler = new IndexPageHandler();
 
   @Override
   public void start(Future<Void> startFuture) {
@@ -25,7 +26,7 @@ public class MainVerticle extends AbstractVerticle {
   private Future<Void> initDatabase() {
     Future<Void> future = Future.future();
 
-    Future<JDBCClient> dbClientFuture = DataBaseClientBuilder.build(vertx);
+    Future<JDBCClient> dbClientFuture = DatabaseClientBuilder.build(vertx);
     if (dbClientFuture.failed()) {
       future.fail(dbClientFuture.cause());
     } else {
@@ -37,14 +38,6 @@ public class MainVerticle extends AbstractVerticle {
   }
 
   private Future<Void> initHttpServer() {
-//    Future<Void> future = Future.future();
-//
-//    vertx.createHttpServer()
-//      .requestHandler(req -> req.response().end("Hello Vert.x! with multi init steps"))
-//      .listen(8181);
-//
-//    future.complete();
-//    return future;
     Future<Void> future = Future.future();
     HttpServer server = vertx.createHttpServer();
 
@@ -91,6 +84,7 @@ public class MainVerticle extends AbstractVerticle {
   private void pageUpdateHandler(RoutingContext routingContext) {
 
     routingContext.response().end("<h2>pageUpdateHandler</h2>");
+
   }
 
   private void pageRenderingHandler(RoutingContext routingContext) {
@@ -101,7 +95,8 @@ public class MainVerticle extends AbstractVerticle {
   }
 
   private void indexHandler(RoutingContext routingContext) {
-    routingContext.response().setStatusCode(200);
-    routingContext.response().end("<h2>indexHandler</h2>");
+    indexPageHandler.process(routingContext, dbClient);
+    //    routingContext.response().setStatusCode(200);
+//    routingContext.response().end("<h2>indexHandler</h2>");
   }
 }
