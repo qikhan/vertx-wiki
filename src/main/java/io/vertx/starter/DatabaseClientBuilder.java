@@ -51,10 +51,13 @@ public class DatabaseClientBuilder {
             LOGGER.error("Database preparation error", create.cause());
             future.fail(create.cause());
           }
+          else {
+            future.complete(jdbcClient);
+          }
         });
       }
     });
-    future.complete(jdbcClient);
+
     return future;
   }
 }

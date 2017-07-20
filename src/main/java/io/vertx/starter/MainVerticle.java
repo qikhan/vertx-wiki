@@ -26,14 +26,15 @@ public class MainVerticle extends AbstractVerticle {
   private Future<Void> initDatabase() {
     Future<Void> future = Future.future();
 
-    Future<JDBCClient> dbClientFuture = DatabaseClientBuilder.build(vertx);
-    if (dbClientFuture.failed()) {
-      future.fail(dbClientFuture.cause());
-    } else {
-      dbClient = dbClientFuture.result();
-      future.complete();
-      LOGGER.debug("DB client creation completed.");
-    }
+    DatabaseClientBuilder.build(vertx).setHandler(dbClientFuture -> {
+      if (dbClientFuture.failed()) {
+        future.fail(dbClientFuture.cause());
+      } else {
+        dbClient = dbClientFuture.result();
+        future.complete();
+        LOGGER.debug("DB client creation completed.");
+      }
+    });
     return future;
   }
 
