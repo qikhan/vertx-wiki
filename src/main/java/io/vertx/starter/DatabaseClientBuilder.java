@@ -39,6 +39,8 @@ public class DatabaseClientBuilder {
       .put("driver_class", "org.hsqldb.jdbcDriver")
       .put("max_pool_size", 30));
 
+    LOGGER.info("Initializing the JDBC connection");
+
     jdbcClient.getConnection(ar -> {
       if (ar.failed()) {
         LOGGER.error("Could not open a database connection", ar.cause());
@@ -53,6 +55,7 @@ public class DatabaseClientBuilder {
           }
           else {
             future.complete(jdbcClient);
+            LOGGER.info("JDBC connection successful");
           }
         });
       }

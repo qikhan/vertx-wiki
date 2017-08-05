@@ -16,12 +16,17 @@ public class IndexPageHandler {
   private final FreeMarkerTemplateEngine templateEngine = FreeMarkerTemplateEngine.create();
 
   public void process(RoutingContext context, JDBCClient dbClient) {
+
+
     dbClient.getConnection(db -> {
       if (db.succeeded()) {
         SQLConnection conn = db.result();
+
         conn.query(DatabaseClientBuilder.SQL_ALL_PAGES, res -> {
           conn.close();
+
           if (res.succeeded()) {
+
             List<String> pages = res.result()
               .getResults()
               .stream()

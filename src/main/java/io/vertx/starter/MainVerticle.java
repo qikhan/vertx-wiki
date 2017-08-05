@@ -13,9 +13,12 @@ import io.vertx.ext.web.handler.BodyHandler;
 public class MainVerticle extends AbstractVerticle {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(MainVerticle.class);
+  public static final int HTTP_PORT = 8080;
 
   private JDBCClient dbClient;
   private IndexPageHandler indexPageHandler = new IndexPageHandler();
+  private RenderPageHandler renderPageHandler = new RenderPageHandler();
+  private UpdatePageHandler updatePageHandler = new UpdatePageHandler();
 
   @Override
   public void start(Future<Void> startFuture) {
@@ -41,15 +44,16 @@ public class MainVerticle extends AbstractVerticle {
   private Future<Void> initHttpServer() {
     Future<Void> future = Future.future();
     HttpServer server = vertx.createHttpServer();
-
+    LOGGER.info("Initializing http server and app router");
     Router router = buildRouter();
 
     server
       .requestHandler(router::accept)
-      .listen(8080, ar -> {
+      .listen(HTTP_PORT, ar -> {
         if (ar.succeeded()) {
-          LOGGER.info("HTTP server running on port 8080");
+          LOGGER.info("HTTP server running on port " + HTTP_PORT);
           future.complete();
+
         } else {
           LOGGER.error("Could not start a HTTP server", ar.cause());
           future.fail(ar.cause());
@@ -65,39 +69,47 @@ public class MainVerticle extends AbstractVerticle {
     router.get("/").handler(this::indexHandler);
     router.get("/wiki/:page").handler(this::pageRenderingHandler);
     router.post().handler(BodyHandler.create());
-    router.put("/save").handler(this::pageUpdateHandler);
+    router.post("/save").handler(this::pageUpdateHandler);
     router.post("/create").handler(this::pageCreateHandler);
     router.delete("/delete").handler(this::pageDeletionHandler);
 
     return router;
   }
 
-  private void pageDeletionHandler(RoutingContext routingContext) {
-    routingContext.response().setStatusCode(200);
-    routingContext.response().end();
+  private void pageDeletionHandler(RoutingContext context) {
+    context.response().setStatusCode(200);
+    context.response().end();
   }
 
-  private void pageCreateHandler(RoutingContext routingContext) {
-    routingContext.response().setStatusCode(201);
-    routingContext.response().end();
+  private void pageCreateHandler(RoutingContext context) {
+    String pageName = context.request().getParam("name");
+    String location = "/wiki/" + pageName;
+    if (pageName == null || pageName.isEmpty()) {
+      location = "/";
+    }
+    context.response().setStatusCode(303);
+    context.response().putHeader("Location", location);
+    context.response().end();
   }
 
-  private void pageUpdateHandler(RoutingContext routingContext) {
+  private void pageUpdateHandler(RoutingContext context) {
 
-    routingContext.response().end("<h2>pageUpdateHandler</h2>");
+    updatePageHandler.process(context, dbClient);
 
   }
 
-  private void pageRenderingHandler(RoutingContext routingContext) {
-    String page = routingContext.request().getParam("page");
-    routingContext.response().setStatusCode(200);
-    routingContext.response().end("<h2>pageRenderingHandler ::" +
-      page +"</h2>");
+  private void pageRenderingHandler(RoutingContext context) {
+
+    renderPageHandler.process(context, dbClient);
+//    String page = context.request().getParam("page");
+//    context.response().setStatusCode(200);
+//    context.response().end("<h2>pageRenderingHandler ::" +
+//      page +"</h2>");
   }
 
-  private void indexHandler(RoutingContext routingContext) {
-    indexPageHandler.process(routingContext, dbClient);
-    //    routingContext.response().setStatusCode(200);
-//    routingContext.response().end("<h2>indexHandler</h2>");
+  private void indexHandler(RoutingContext context) {
+    indexPageHandler.process(context, dbClient);
+    //    context.response().setStatusCode(200);
+    //    context.response().end("<h2>indexHandler</h2>");
   }
 }
