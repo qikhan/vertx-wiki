@@ -9,10 +9,7 @@ import io.vertx.ext.jdbc.JDBCClient;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.RoutingContext;
 import io.vertx.ext.web.handler.BodyHandler;
-import io.vertx.starter.wiki.DatabaseClientBuilder;
-import io.vertx.starter.wiki.IndexPageHandler;
-import io.vertx.starter.wiki.RenderPageHandler;
-import io.vertx.starter.wiki.UpdatePageHandler;
+import io.vertx.starter.wiki.*;
 
 public class MainVerticle extends AbstractVerticle {
 
@@ -23,6 +20,7 @@ public class MainVerticle extends AbstractVerticle {
   private IndexPageHandler indexPageHandler = new IndexPageHandler();
   private RenderPageHandler renderPageHandler = new RenderPageHandler();
   private UpdatePageHandler updatePageHandler = new UpdatePageHandler();
+  private DeletePageHandler deletePageHandler = new DeletePageHandler();
 
   @Override
   public void start(Future<Void> startFuture) {
@@ -75,14 +73,15 @@ public class MainVerticle extends AbstractVerticle {
     router.post().handler(BodyHandler.create());
     router.post("/save").handler(this::pageUpdateHandler);
     router.post("/create").handler(this::pageCreateHandler);
-    router.delete("/delete").handler(this::pageDeletionHandler);
+    router.post("/delete").handler(this::pageDeletionHandler);
 
     return router;
   }
 
   private void pageDeletionHandler(RoutingContext context) {
-    context.response().setStatusCode(200);
-    context.response().end();
+    deletePageHandler.process(context, dbClient);
+    //    context.response().setStatusCode(200);
+//    context.response().end();
   }
 
   private void pageCreateHandler(RoutingContext context) {

@@ -24,8 +24,6 @@ public class DatabaseClientBuilder {
     ", Content clob " +
     ")";
 
-  public static final String SQL_DELETE_PAGE = "delete from Pages where Id = ?";
-
   public static Future<JDBCClient> build(Vertx vertx) {
 
     Future<JDBCClient> future = Future.future();
