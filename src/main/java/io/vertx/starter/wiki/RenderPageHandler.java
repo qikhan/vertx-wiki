@@ -1,4 +1,4 @@
-package io.vertx.starter;
+package io.vertx.starter.wiki;
 
 import com.github.rjeschke.txtmark.Processor;
 import io.vertx.core.json.JsonArray;
@@ -18,6 +18,7 @@ public class RenderPageHandler {
 
   private final FreeMarkerTemplateEngine templateEngine = FreeMarkerTemplateEngine.create();
 
+  private static final String SQL_GET_PAGE = "select Id, Content from Pages where Name = ?";
   private static final String EMPTY_PAGE_MARKDOWN =
     "# A new page\n" +
       "\n" +
@@ -31,7 +32,7 @@ public class RenderPageHandler {
       if (db.succeeded()) {
         SQLConnection conn = db.result();
 
-        conn.queryWithParams(DatabaseClientBuilder.SQL_GET_PAGE
+        conn.queryWithParams(SQL_GET_PAGE
           , new JsonArray().add(page)
           , res -> {
             conn.close();

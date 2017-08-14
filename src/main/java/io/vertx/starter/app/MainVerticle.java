@@ -1,4 +1,4 @@
-package io.vertx.starter;
+package io.vertx.starter.app;
 
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Future;
@@ -9,6 +9,10 @@ import io.vertx.ext.jdbc.JDBCClient;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.RoutingContext;
 import io.vertx.ext.web.handler.BodyHandler;
+import io.vertx.starter.wiki.DatabaseClientBuilder;
+import io.vertx.starter.wiki.IndexPageHandler;
+import io.vertx.starter.wiki.RenderPageHandler;
+import io.vertx.starter.wiki.UpdatePageHandler;
 
 public class MainVerticle extends AbstractVerticle {
 

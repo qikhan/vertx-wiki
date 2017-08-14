@@ -1,4 +1,4 @@
-package io.vertx.starter;
+package io.vertx.starter.wiki;
 
 import io.vertx.ext.jdbc.JDBCClient;
 import io.vertx.ext.sql.SQLConnection;
@@ -14,6 +14,7 @@ import java.util.stream.Collectors;
 public class IndexPageHandler {
 
   private final FreeMarkerTemplateEngine templateEngine = FreeMarkerTemplateEngine.create();
+  private static final String SQL_ALL_PAGES = "select Name from Pages";
 
   public void process(RoutingContext context, JDBCClient dbClient) {
 
@@ -22,7 +23,7 @@ public class IndexPageHandler {
       if (db.succeeded()) {
         SQLConnection conn = db.result();
 
-        conn.query(DatabaseClientBuilder.SQL_ALL_PAGES, res -> {
+        conn.query(SQL_ALL_PAGES, res -> {
           conn.close();
 
           if (res.succeeded()) {

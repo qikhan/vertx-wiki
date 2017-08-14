@@ -1,4 +1,4 @@
-package io.vertx.starter;
+package io.vertx.starter.wiki;
 
 import io.vertx.core.Future;
 import io.vertx.core.Vertx;
@@ -24,10 +24,6 @@ public class DatabaseClientBuilder {
     ", Content clob " +
     ")";
 
-  public static final String SQL_GET_PAGE = "select Id, Content from Pages where Name = ?";
-  public static final String SQL_CREATE_PAGE = "insert into Pages values (NULL, ?, ?)";
-  public static final String SQL_SAVE_PAGE = "update Pages set Content = ? where Id = ?";
-  public static final String SQL_ALL_PAGES = "select Name from Pages";
   public static final String SQL_DELETE_PAGE = "delete from Pages where Id = ?";
 
   public static Future<JDBCClient> build(Vertx vertx) {
