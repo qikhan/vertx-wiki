@@ -4,6 +4,7 @@ import io.vertx.core.Vertx;
 import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
+import io.vertx.starter.app.MainVerticle;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -27,6 +28,7 @@ public class MainVerticleTest {
 
   @Test
   public void testThatTheServerIsStarted(TestContext tc) {
+
     Async async = tc.async();
     vertx.createHttpClient().getNow(8080, "localhost", "/", response -> {
       tc.assertEquals(response.statusCode(), 200);
