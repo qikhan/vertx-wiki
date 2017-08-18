@@ -1,0 +1,8 @@
+{
+  "http.server.port" : 8181,
+  "wikidb.queue" : "wikidb.queue",
+  "wikidb.jdbc.url" : "jdbc:hsqldb:file:db/wiki",
+  "wikidb.jdbc.driver_class" : "org.hsqldb.jdbcDriver",
+  "wikidb.jdbc.max_pool_size" : 30,
+  "wikidb.sqlqueries.resource.file" : "/db-queries.properties"
+}
